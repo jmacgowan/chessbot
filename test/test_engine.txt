@@ -1,0 +1,9 @@
+uci
+isready
+position startpos
+go depth 3
+position fen 4k3/8/8/8/8/8/4r3/4K3 w - - 0 1
+go depth 1
+position fen r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 0 1
+go depth 4
+quit

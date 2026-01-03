@@ -1,7 +1,7 @@
 package uci;
 
 import core.Position;
-import engine.DummyEngine;
+import engine.BasicEngine;
 import engine.Engine;
 import engine.SearchLimits;
 
@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 public final class UciLoop {
     private final UciState state = new UciState();
-    private final Engine engine = new DummyEngine();
+    private final Engine engine = new BasicEngine();
 
     public void run() throws Exception {
         BufferedReader in = new BufferedReader(
@@ -55,15 +55,23 @@ public final class UciLoop {
     }
 
     private void handleGo(String line) {
-        // Minimal: support "go depth N" only. Default depth=3.
         SearchLimits limits = UciParser.parseGo(line);
         Position pos = state.position();
 
-        // NOTE: We are not applying state.moves() yet (next milestone).
-        // For now, engine sees the base position only.
         var result = engine.analyze(pos, limits);
 
-        // UCI requires exactly: bestmove <move> [ponder <move>]
+        // Print UCI info output
+        if (!result.pv().isEmpty()) {
+            System.out.print("info depth " + limits.depth());
+            System.out.print(" score cp " + result.evalCp());
+            System.out.print(" pv");
+            for (String move : result.pv()) {
+                System.out.print(" " + move);
+            }
+            System.out.println();
+        }
+
+        // Print best move
         System.out.println("bestmove " + result.bestMoveUci());
     }
 }
